@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "793699583269",
+    "firebase_url": "https://ez-wallpaper-4e91f.firebaseio.com",
+    "project_id": "ez-wallpaper-4e91f",
+    "storage_bucket": "ez-wallpaper-4e91f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:793699583269:android:20e5d9f9291a6c9eb286cc",
+        "android_client_info": {
+          "package_name": "com.innovidio.ez_wallpaper"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "793699583269-cm63mcqf2h0n5fj3g0cjl0uu09n18h1b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7L2ddqB4bUF-vc69MiA4y4FgbO3si-sU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "793699583269-cm63mcqf2h0n5fj3g0cjl0uu09n18h1b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
