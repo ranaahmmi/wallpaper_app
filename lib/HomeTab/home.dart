@@ -1,6 +1,7 @@
-import 'package:wallpaper_app/Pages/Shared_preferences.dart';
-import 'package:wallpaper_app/Pages/scraping.dart';
-import 'package:wallpaper_app/Pages/slider.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:wallpaper_app/Shared/Shared_preferences.dart';
+import 'package:wallpaper_app/Scraping/scraping.dart';
+import 'package:wallpaper_app/SliderScreen/slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,7 @@ class HomeScreenState extends State<HomeScreen> {
   int i = 2;
   @override
   void initState() {
+    FirebaseAnalytics().logEvent(name: 'home_tab_open');
     loaddata();
     scrollController.addListener(() {
       if (scrollController.position.pixels ==
@@ -25,6 +27,9 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   void loadAgain() {
+    FirebaseAnalytics().logEvent(
+        name: 'wallpaper_load_more',
+        parameters: {'category_name': 'Popular', 'page_count': i});
     sdscrap('https://wallpaperscraft.com/all/1080x1920/page$i').then((data) {
       setState(() {
         i++;
@@ -86,6 +91,9 @@ class HomeScreenState extends State<HomeScreen> {
                 onTap: () {
                   Pref().adsetData();
                   Pref().adsaveData();
+                  FirebaseAnalytics().logEvent(
+                      name: 'home_tab_open',
+                      parameters: {'category_name': 'Popular'});
                   Navigator.push(
                     context,
                     MaterialPageRoute(

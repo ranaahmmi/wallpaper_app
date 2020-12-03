@@ -1,9 +1,9 @@
 import 'package:wallpaper_app/HomeScreen.dart';
-import 'package:wallpaper_app/Pages/About.dart';
-import 'package:wallpaper_app/Pages/Privacy_policy.dart';
-import 'package:wallpaper_app/Pages/Save.dart';
+import 'package:wallpaper_app/About/About.dart';
+import 'package:wallpaper_app/PrivacyPolicy/Privacy_policy.dart';
+import 'package:wallpaper_app/%20favorite/Save.dart';
 import 'package:flutter/material.dart';
-import 'package:wallpaper_app/Pages/ads.dart';
+import 'package:wallpaper_app/Shared/ads.dart';
 
 class DrawerList extends StatefulWidget {
   @override

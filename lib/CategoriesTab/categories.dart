@@ -1,7 +1,7 @@
-import 'package:wallpaper_app/Pages/Sub_catagories.dart';
-import 'package:wallpaper_app/Pages/color_list.dart';
+import 'package:wallpaper_app/SubCategoriesScreen/Sub_catagories.dart';
+import 'package:wallpaper_app/Theme/color_list.dart';
 import 'package:flutter/material.dart';
-import 'package:wallpaper_app/Pages/Shared_preferences.dart';
+import 'package:wallpaper_app/Shared/Shared_preferences.dart';
 
 class Categories extends StatelessWidget {
   @override

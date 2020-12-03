@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'slider.dart';
+import '../SliderScreen/slider.dart';
 import 'ads.dart';
 
 class Pref {

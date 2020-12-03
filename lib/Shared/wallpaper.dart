@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:ext_storage/ext_storage.dart';
-import 'slider.dart';
+import '../SliderScreen/slider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class Wallpaper {

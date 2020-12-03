@@ -1,21 +1,19 @@
-import 'package:wallpaper_app/Pages/scraping.dart';
-import 'package:wallpaper_app/Pages/slider.dart';
+import 'package:wallpaper_app/Scraping/scraping.dart';
+import 'package:wallpaper_app/SliderScreen/slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wallpaper_app/Pages/Shared_preferences.dart';
-import 'Sub_catagories.dart';
+import 'package:wallpaper_app/Shared/Shared_preferences.dart';
 
-class Search extends StatefulWidget {
+class SubCategories extends StatefulWidget {
+  static const routeName = '/Sub_Categories';
   @override
-  _SearchState createState() => _SearchState();
-  Search({this.url, this.name});
- final String url;
- final String name;
+  _SubCategoriesState createState() => _SubCategoriesState();
 }
 
-class _SearchState extends State<Search> {
+class _SubCategoriesState extends State<SubCategories> {
   ScrollController _scrollController = ScrollController();
   int i = 2;
+  static String url = '';
 
   @override
   void initState() {
@@ -31,8 +29,7 @@ class _SearchState extends State<Search> {
   }
 
   void _loadAgain() {
-    cscrap('https://wallpaperscraft.com/search/?order=&page=$i&query=${widget.name}&size=1080x1920')
-        .then((data) {
+    cscrap(url + '/page$i').then((data) {
       setState(() {
         i++;
       });
@@ -46,8 +43,8 @@ class _SearchState extends State<Search> {
   }
 
   loaddata() async {
-    await Future.delayed(const Duration(microseconds: 300), () {
-      cscrap(widget.url).then((data) {
+    await Future.delayed(const Duration(seconds: 1), () {
+      cscrap(url).then((data) {
         setState(() {});
       });
     });
@@ -55,6 +52,10 @@ class _SearchState extends State<Search> {
 
   @override
   Widget build(BuildContext context) {
+    final Map urls = ModalRoute.of(context).settings.arguments;
+    setState(() {
+      url = urls['url'];
+    });
     return Scaffold(
       appBar: AppBar(title: Text('EZ Wallpaper')),
       body: SingleChildScrollView(
@@ -67,7 +68,7 @@ class _SearchState extends State<Search> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  widget.name,
+                  urls['name'],
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -126,3 +127,5 @@ class _SearchState extends State<Search> {
           );
   }
 }
+
+var categorieslist = [];

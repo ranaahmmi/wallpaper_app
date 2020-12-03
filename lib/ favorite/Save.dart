@@ -1,61 +1,40 @@
-import 'package:wallpaper_app/Pages/scraping.dart';
-import 'package:wallpaper_app/Pages/slider.dart';
+
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wallpaper_app/Pages/Shared_preferences.dart';
+import 'package:wallpaper_app/Shared/Shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class SubCategories extends StatefulWidget {
-  static const routeName = '/Sub_Categories';
+import '../PreviewScreen/Preview.dart';
+
+class Save extends StatefulWidget {
   @override
-  _SubCategoriesState createState() => _SubCategoriesState();
+  _SaveState createState() => _SaveState();
 }
 
-class _SubCategoriesState extends State<SubCategories> {
-  ScrollController _scrollController = ScrollController();
-  int i = 2;
-  static String url = '';
-
+class _SaveState extends State<Save> {
   @override
   void initState() {
-    loaddata();
-
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        _loadAgain();
-      }
-    });
+    sharepref();
     super.initState();
-  }
-
-  void _loadAgain() {
-    cscrap(url + '/page$i').then((data) {
-      setState(() {
-        i++;
-      });
-    });
   }
 
   @override
   void dispose() {
-    categorieslist = [];
     super.dispose();
   }
 
-  loaddata() async {
-    await Future.delayed(const Duration(seconds: 1), () {
-      cscrap(url).then((data) {
-        setState(() {});
-      });
+  sharepref() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      favlist = prefs.getStringList('favlist') ?? [];
     });
   }
 
+  List<String> favlist = [];
+
   @override
   Widget build(BuildContext context) {
-    final Map urls = ModalRoute.of(context).settings.arguments;
-    setState(() {
-      url = urls['url'];
-    });
     return Scaffold(
       appBar: AppBar(title: Text('EZ Wallpaper')),
       body: SingleChildScrollView(
@@ -68,7 +47,7 @@ class _SubCategoriesState extends State<SubCategories> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  urls['name'],
+                  'Faviorit',
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -86,10 +65,9 @@ class _SubCategoriesState extends State<SubCategories> {
   }
 
   wallpaper() {
-    return categorieslist.length > 0
+    return favlist.length > 0
         ? GridView.builder(
-            controller: _scrollController,
-            itemCount: categorieslist.length + 1,
+            itemCount: favlist.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
               mainAxisSpacing: 2,
@@ -97,27 +75,19 @@ class _SubCategoriesState extends State<SubCategories> {
                   (MediaQuery.of(context).size.height / 1.2),
             ),
             itemBuilder: (BuildContext context, int index) {
-              if (index == categorieslist.length) {
-                return CupertinoActivityIndicator();
-              }
-              final wallpaper = categorieslist[index];
               return GestureDetector(
                 onTap: () {
                   Pref().adsetData();
                   Pref().adsaveData();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Sliders(
-                              page: index,
-                              lists: categorieslist,
-                            )),
-                  );
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => Preview(
+                            src: favlist[index],
+                          )));
                 },
                 child: Container(
                     padding: const EdgeInsets.all(2),
                     child: Image.network(
-                      wallpaper['src'],
+                      favlist[index],
                       fit: BoxFit.fitWidth,
                     )),
               );
@@ -127,5 +97,3 @@ class _SubCategoriesState extends State<SubCategories> {
           );
   }
 }
-
-var categorieslist = [];

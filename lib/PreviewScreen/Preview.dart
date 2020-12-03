@@ -1,9 +1,9 @@
 import 'package:ext_storage/ext_storage.dart';
-import 'package:wallpaper_app/Pages/Shared_preferences.dart';
+import 'package:wallpaper_app/Shared/Shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:wallpaperplugin/wallpaperplugin.dart';
 import 'dart:ui';
-import 'wallpaper.dart';
+import '../Shared/wallpaper.dart';
 import 'dart:async';
 
 class Preview extends StatefulWidget {

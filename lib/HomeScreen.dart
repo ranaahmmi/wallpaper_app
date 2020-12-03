@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:wallpaper_app/Pages/drawer.dart';
-import 'package:wallpaper_app/Pages/home.dart';
-import 'package:wallpaper_app/Pages/categories.dart';
-import 'package:wallpaper_app/Pages/Search.dart';
+import 'package:wallpaper_app/Shared/drawer.dart';
+import 'package:wallpaper_app/HomeTab/home.dart';
+import 'package:wallpaper_app/CategoriesTab/categories.dart';
+import 'package:wallpaper_app/SearchScreen/Search.dart';
 import 'package:firebase_admob/firebase_admob.dart';
-import 'package:wallpaper_app/Pages/ads.dart';
+import 'package:wallpaper_app/Shared/ads.dart';
 import 'package:native_ads/native_ads.dart';
 
 class HomePage extends StatefulWidget {

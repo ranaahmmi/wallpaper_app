@@ -1,8 +1,8 @@
 import 'dart:math';
 import 'package:ext_storage/ext_storage.dart';
-import 'package:wallpaper_app/Pages/Preview.dart';
-import 'package:wallpaper_app/Pages/Shared_preferences.dart';
-import 'package:wallpaper_app/Pages/scraping.dart';
+import 'package:wallpaper_app/PreviewScreen/Preview.dart';
+import 'package:wallpaper_app/Shared/Shared_preferences.dart';
+import 'package:wallpaper_app/Scraping/scraping.dart';
 import 'package:native_ads/native_ad_param.dart';
 import 'package:native_ads/native_ad_view.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +11,7 @@ import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wallpaperplugin/wallpaperplugin.dart';
 import 'dart:ui';
-import 'wallpaper.dart';
+import '../Shared/wallpaper.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class Sliders extends StatefulWidget {

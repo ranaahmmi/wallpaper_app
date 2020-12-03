@@ -1,6 +1,6 @@
 import 'package:wallpaper_app/HomeScreen.dart';
-import 'package:wallpaper_app/Pages/Sub_catagories.dart';
-import 'package:wallpaper_app/Pages/slider.dart';
+import 'package:wallpaper_app/SubCategoriesScreen/Sub_catagories.dart';
+import 'package:wallpaper_app/SliderScreen/slider.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
