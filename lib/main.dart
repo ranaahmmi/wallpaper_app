@@ -1,13 +1,13 @@
-import 'package:wallpaper_app/HomeScreen.dart';
-import 'package:wallpaper_app/SubCategoriesScreen/Sub_catagories.dart';
-import 'package:wallpaper_app/SliderScreen/slider.dart';
+import 'package:wallpaper_app/Screens/HomeScreen.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
+import 'package:wallpaper_app/Screens/SubCategoriesScreen/Sub_catagories.dart';
+
+import 'Screens/SliderScreen/slider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

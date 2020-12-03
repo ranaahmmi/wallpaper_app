@@ -1,7 +1,8 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:wallpaper_app/Screens/SliderScreen/slider.dart';
 import 'package:wallpaper_app/Shared/Shared_preferences.dart';
 import 'package:wallpaper_app/Scraping/scraping.dart';
-import 'package:wallpaper_app/SliderScreen/slider.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

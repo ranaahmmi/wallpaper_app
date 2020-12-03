@@ -1,9 +1,11 @@
-import 'package:wallpaper_app/SubCategoriesScreen/Sub_catagories.dart';
-import 'package:wallpaper_app/SliderScreen/slider.dart';
+
 import 'package:http/http.dart';
 import 'package:html/parser.dart';
 import 'package:html/dom.dart' as dom;
-import '../HomeTab/home.dart';
+import 'package:wallpaper_app/Screens/HomeTab/home.dart';
+import 'package:wallpaper_app/Screens/SliderScreen/slider.dart';
+import 'package:wallpaper_app/Screens/SubCategoriesScreen/Sub_catagories.dart';
+
 
 sdscrap(String url) async {
   var client = Client();

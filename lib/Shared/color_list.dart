@@ -1,4 +1,5 @@
-import 'package:wallpaper_app/SearchScreen/Search.dart';
+
+import 'package:wallpaper_app/Screens/SearchScreen/Search.dart';
 import 'package:wallpaper_app/Shared/Shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

@@ -1,5 +1,6 @@
-import 'package:wallpaper_app/SubCategoriesScreen/Sub_catagories.dart';
-import 'package:wallpaper_app/Theme/color_list.dart';
+
+import 'package:wallpaper_app/Screens/SubCategoriesScreen/Sub_catagories.dart';
+import 'package:wallpaper_app/Shared/color_list.dart';
 import 'package:flutter/material.dart';
 import 'package:wallpaper_app/Shared/Shared_preferences.dart';
 

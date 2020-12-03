@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:wallpaper_app/Screens/CategoriesTab/categories.dart';
+import 'package:wallpaper_app/Screens/HomeTab/home.dart';
+import 'package:wallpaper_app/Screens/SearchScreen/Search.dart';
 import 'package:wallpaper_app/Shared/drawer.dart';
-import 'package:wallpaper_app/HomeTab/home.dart';
-import 'package:wallpaper_app/CategoriesTab/categories.dart';
-import 'package:wallpaper_app/SearchScreen/Search.dart';
+
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:wallpaper_app/Shared/ads.dart';
 import 'package:native_ads/native_ads.dart';

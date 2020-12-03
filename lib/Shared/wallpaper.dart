@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:ext_storage/ext_storage.dart';
-import '../SliderScreen/slider.dart';
+
 import 'package:permission_handler/permission_handler.dart';
+import 'package:wallpaper_app/Screens/SliderScreen/slider.dart';
 
 class Wallpaper {
   static Stream<String> imageDownloadProgress(String url) async* {
