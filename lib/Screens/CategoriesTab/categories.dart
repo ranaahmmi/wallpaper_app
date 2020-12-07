@@ -1,10 +1,21 @@
-
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:wallpaper_app/Screens/SubCategoriesScreen/Sub_catagories.dart';
 import 'package:wallpaper_app/Shared/color_list.dart';
 import 'package:flutter/material.dart';
 import 'package:wallpaper_app/Shared/Shared_preferences.dart';
 
-class Categories extends StatelessWidget {
+class Categories extends StatefulWidget {
+  @override
+  _CategoriesState createState() => _CategoriesState();
+}
+
+class _CategoriesState extends State<Categories> {
+  @override
+  void initState() {
+    FirebaseAnalytics().logEvent(name: 'category_tab_open');
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -48,6 +59,9 @@ class Categories extends StatelessWidget {
                             onTap: () {
                               Pref().adsetData();
                               Pref().adsaveData();
+                              FirebaseAnalytics().logEvent(
+                                  name: 'categories_open',
+                                  parameters: {'category_name': wallpaper});
                               Navigator.of(context).pushNamed(
                                   SubCategories.routeName,
                                   arguments: wallpaper);

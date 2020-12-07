@@ -15,7 +15,7 @@ InterstitialAd interstitialAd = myInterstitial();
 InterstitialAd myInterstitial() {
   return InterstitialAd(
 
-    adUnitId: "ca-app-pub-3940256099942544/1033173712",
+    adUnitId: "ca-app-pub-4044308120454547/2134443243",
 
     targetingInfo: targetingInfo,
     listener: (MobileAdEvent event) {
@@ -28,11 +28,11 @@ InterstitialAd myInterstitial() {
   );
 }
 
-BannerAd myBanner = BannerAd(
-  adUnitId: BannerAd.testAdUnitId,
-  size: AdSize.smartBanner,
-  targetingInfo: targetingInfo,
-  listener: (MobileAdEvent event) {
-    print("BannerAd event is $event");
-  },
-);
+// BannerAd myBanner = BannerAd(
+//   adUnitId: BannerAd.testAdUnitId,
+//   size: AdSize.smartBanner,
+//   targetingInfo: targetingInfo,
+//   listener: (MobileAdEvent event) {
+//     print("BannerAd event is $event");
+//   },
+// );

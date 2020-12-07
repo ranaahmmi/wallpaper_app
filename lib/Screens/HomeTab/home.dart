@@ -46,29 +46,32 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        color: Colors.black,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            SizedBox(height: 5),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Popular',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16),
+    return ListView(
+      shrinkWrap: true,
+      children: [
+        Container(
+          color: Colors.black,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              SizedBox(height: 5),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Popular',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16),
+                ),
               ),
-            ),
-            Container(
-                height: MediaQuery.of(context).size.height * 0.8,
-                child: wallpaper())
-          ],
+              Container(
+                  height: MediaQuery.of(context).size.height * 0.8,
+                  child: wallpaper())
+            ],
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -93,7 +96,7 @@ class HomeScreenState extends State<HomeScreen> {
                   Pref().adsetData();
                   Pref().adsaveData();
                   FirebaseAnalytics().logEvent(
-                      name: 'home_tab_open',
+                      name: 'wallpaper_open',
                       parameters: {'category_name': 'Popular'});
                   Navigator.push(
                     context,
@@ -101,6 +104,7 @@ class HomeScreenState extends State<HomeScreen> {
                         builder: (context) => Sliders(
                               page: index,
                               lists: wallpaperlist,
+                              catagory: 'Popular',
                             )),
                   );
                 },

@@ -1,9 +1,9 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:wallpaper_app/Screens/CategoriesTab/categories.dart';
 import 'package:wallpaper_app/Screens/HomeTab/home.dart';
 import 'package:wallpaper_app/Screens/SearchScreen/Search.dart';
 import 'package:wallpaper_app/Shared/drawer.dart';
-
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:wallpaper_app/Shared/ads.dart';
 import 'package:native_ads/native_ads.dart';
@@ -38,7 +38,9 @@ class _HomePageState extends State<HomePage>
             : TextField(
                 autofocus: true,
                 onSubmitted: (value) {
-                  print(value);
+                  FirebaseAnalytics().logEvent(
+                      name: 'wallpaper_load_more',
+                      parameters: {'search_text': value});
                   var b = [
                     {
                       'name': value,
@@ -62,6 +64,29 @@ class _HomePageState extends State<HomePage>
                     hintStyle: TextStyle(color: Colors.white)),
               ),
         elevation: 0.7,
+        actions: <Widget>[
+          isSearching
+              ? IconButton(
+                  icon: Icon(Icons.cancel),
+                  onPressed: () {
+                    FirebaseAnalytics().logEvent(name: 'search_bar_close');
+
+                    setState(() {
+                      this.isSearching = false;
+//                      filterCountries = countries;
+                    });
+                  },
+                )
+              : IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: () {
+                    FirebaseAnalytics().logEvent(name: 'search_bar_open');
+                    setState(() {
+                      this.isSearching = true;
+                    });
+                  },
+                )
+        ],
         bottom: TabBar(
           controller: tabController,
           indicatorColor: Colors.white,
@@ -72,33 +97,16 @@ class _HomePageState extends State<HomePage>
             Tab(text: 'CATEGORIES'),
           ],
         ),
-        actions: <Widget>[
-          isSearching
-              ? IconButton(
-                  icon: Icon(Icons.cancel),
-                  onPressed: () {
-                    setState(() {
-                      this.isSearching = false;
-//                      filterCountries = countries;
-                    });
-                  },
-                )
-              : IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: () {
-                    setState(() {
-                      this.isSearching = true;
-                    });
-                  },
-                )
-        ],
       ),
-      body: TabBarView(
-        controller: tabController,
-        children: <Widget>[
-          HomeScreen(),
-          Categories(),
-        ],
+      body: Container(
+        color: Colors.black,
+        child: TabBarView(
+          controller: tabController,
+          children: <Widget>[
+            HomeScreen(),
+            Categories(),
+          ],
+        ),
       ),
     );
   }

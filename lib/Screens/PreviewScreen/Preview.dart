@@ -100,7 +100,7 @@ class _PreviewState extends State<Preview> {
                       });
                     },
                     icon: Image.asset(
-                      'assets/w_down.png',
+                      'assets/download.png',
                       color: Colors.white,
                     ),
                     iconSize: 46,
@@ -137,7 +137,7 @@ class _PreviewState extends State<Preview> {
                       });
                     },
                     icon: Image.asset(
-                      'assets/w_icon.png',
+                      'assets/setwallpaper.png',
                       color: Colors.white,
                     ),
                     iconSize: 46,

@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:wallpaper_app/Screens/HomeScreen.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
       FirebaseAnalyticsObserver(analytics: analytics);
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
     return MaterialApp(
         title: 'EZ WallPaper',
         theme: ThemeData(
@@ -36,7 +38,6 @@ class MyApp extends StatelessWidget {
         home: HomePage(),
         debugShowCheckedModeBanner: false,
         routes: {
-          Sliders.routeName: (ctx) => Sliders(),
           SubCategories.routeName: (ctx) => SubCategories(),
         });
   }

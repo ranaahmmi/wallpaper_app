@@ -1,4 +1,4 @@
-
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:wallpaper_app/Screens/SearchScreen/Search.dart';
 import 'package:wallpaper_app/Shared/Shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,12 +18,16 @@ class _ColorListState extends State<ColorList> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
+              FirebaseAnalytics().logEvent(
+                  name: 'color_open',
+                  parameters: {'category_name': 'Color'});
               Pref().adsetData();
               Pref().adsaveData();
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => Search(
                         url: colorList[index]['url'],
                         name: colorList[index]['name'],
+                        category: colorList[index]['name'],
                       )));
             },
             child: Container(

@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:wallpaper_app/Scraping/scraping.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -76,8 +77,8 @@ class _SubCategoriesState extends State<SubCategories> {
                 ),
               ),
               Container(
-                  height: MediaQuery.of(context).size.height*0.9,
-                  child: wallpaper())
+                  height: MediaQuery.of(context).size.height * 0.9,
+                  child: wallpaper(urls['name']))
             ],
           ),
         ),
@@ -85,7 +86,7 @@ class _SubCategoriesState extends State<SubCategories> {
     );
   }
 
-  wallpaper() {
+  wallpaper(String category) {
     return categorieslist.length > 0
         ? GridView.builder(
             controller: _scrollController,
@@ -105,12 +106,16 @@ class _SubCategoriesState extends State<SubCategories> {
                 onTap: () {
                   Pref().adsetData();
                   Pref().adsaveData();
+                  FirebaseAnalytics().logEvent(
+                      name: 'wallpaper_open',
+                      parameters: {'category_name': category});
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => Sliders(
                               page: index,
                               lists: categorieslist,
+                              catagory: category,
                             )),
                   );
                 },

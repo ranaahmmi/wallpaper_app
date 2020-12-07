@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:ext_storage/ext_storage.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:wallpaper_app/Screens/PreviewScreen/Preview.dart';
 import 'package:wallpaper_app/Shared/Shared_preferences.dart';
 import 'package:wallpaper_app/Scraping/scraping.dart';
@@ -15,9 +16,10 @@ import 'dart:ui';
 import 'package:velocity_x/velocity_x.dart';
 
 class Sliders extends StatefulWidget {
-  Sliders({this.page, this.lists});
+  Sliders({this.page, this.lists, @required this.catagory});
 
   int page;
+  final String catagory;
   final lists;
   static const routeName = '/slider';
   final String title = "Wallpapers";
@@ -126,6 +128,12 @@ class SlidersState extends State<Sliders> {
                                         children: <Widget>[
                                           GestureDetector(
                                             onTap: () {
+                                              FirebaseAnalytics().logEvent(
+                                                  name: 'wallpaper_preview',
+                                                  parameters: {
+                                                    'category_name':
+                                                        widget.catagory
+                                                  });
                                               Navigator.of(context).push(
                                                   MaterialPageRoute(
                                                       builder: (context) =>
@@ -192,7 +200,7 @@ class SlidersState extends State<Sliders> {
                                             ),
                                           ),
                                           SizedBox(height: 6),
-                                          buttonRow(itemIndex),
+                                          buttonRow(itemIndex, widget.catagory),
                                         ],
                                       ),
                                     ),
@@ -239,15 +247,15 @@ class SlidersState extends State<Sliders> {
                             onParentViewCreated: (_) {},
                             androidParam: AndroidParam()
                               ..placementId =
-                                  "ca-app-pub-4044308120454547/5083320694" // test
+                                  "ca-app-pub-4044308120454547/7953746133" // test
                               ..packageName = "com.innovidio.ez_wallpaper"
                               ..layoutName = 'native_ad1'
                               ..attributionText = "AD",
                             onAdImpression: () => print("onAdImpression!!!"),
                             onAdClicked: () => print("onAdClicked!!!"),
-                            onAdFailedToLoad: (Map<String, dynamic> error) =>
-                                print("onAdFailedToLoad!!! $error"),
-                            onAdLoaded: () => print("Loading"),
+                            // onAdFailedToLoad: (Map<String, dynamic> error) =>
+                            //     print("onAdFailedToLoad!!! $error"),
+                            // onAdLoaded: () => print("Loading"),
                           ),
                         ).px2()
                       : Text("")))
@@ -256,7 +264,7 @@ class SlidersState extends State<Sliders> {
     );
   }
 
-  buttonRow(int itemIndex) {
+  buttonRow(int itemIndex, String category) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -275,6 +283,9 @@ class SlidersState extends State<Sliders> {
                   downloading = true;
                 });
               }, onDone: () {
+                FirebaseAnalytics().logEvent(
+                    name: 'wallpaper_download',
+                    parameters: {'category_name': category});
                 timer = new Timer(const Duration(milliseconds: 3000), () {
                   setState(() {
                     adshow = true;
@@ -291,7 +302,7 @@ class SlidersState extends State<Sliders> {
               });
             },
             icon: Image.asset(
-              'assets/w_down.png',
+              'assets/download.png',
               color: Colors.white,
             ),
             iconSize: 46,
@@ -311,9 +322,10 @@ class SlidersState extends State<Sliders> {
                   downloading = true;
                 });
               }, onDone: () async {
-                print('done');
-                final dir = await ExtStorage.getExternalStoragePublicDirectory(
-                    ExtStorage.DIRECTORY_PICTURES);
+                FirebaseAnalytics().logEvent(
+                    name: 'wallpaper_set',
+                    parameters: {'category_name': category});
+                final dir = await ExtStorage.getExternalStorageDirectory();
 
                 Wallpaperplugin.setAutoWallpaper(
                     localFile: '$dir/myimage.jpeg');
@@ -324,7 +336,6 @@ class SlidersState extends State<Sliders> {
                     home = home;
                   });
                 });
-                print("Task Done");
               }, onError: (error) {
                 setState(() {
                   downloading = false;
@@ -333,7 +344,7 @@ class SlidersState extends State<Sliders> {
               });
             },
             icon: Image.asset(
-              'assets/w_icon.png',
+              'assets/setwallpaper.png',
               color: Colors.white,
             ),
             iconSize: 46,
@@ -351,10 +362,16 @@ class SlidersState extends State<Sliders> {
             iconSize: 46,
             onPressed: () {
               if (alreadySaved == false) {
+                FirebaseAnalytics().logEvent(
+                    name: 'wallpaper_add_favourite',
+                    parameters: {'category_name': category});
                 setState(() {
                   alreadySaved = true;
                 });
               } else {
+                FirebaseAnalytics().logEvent(
+                    name: 'wallpaper_remove_favourite',
+                    parameters: {'category_name': category});
                 setState(() {
                   alreadySaved = false;
                 });
@@ -435,20 +452,20 @@ class SlidersState extends State<Sliders> {
     return NativeAdView(
       onParentViewCreated: (_) {},
       androidParam: AndroidParam()
-        ..placementId = "ca-app-pub-4044308120454547/5083320694" // test
+        ..placementId = "ca-app-pub-4044308120454547/7953746133" // test
         ..packageName = "com.innovidio.ez_wallpaper"
         ..layoutName = 'native_ad'
         ..attributionText = "AD",
-      iosParam: IOSParam()
-        ..placementId = "ca-app-pub-3940256099942544/3986624511" // test
-        ..bundleId = "{{YOUR_IOS_APP_BUNDLE_ID}}"
-        ..layoutName = "{{YOUR_CREATED_LAYOUT_FILE_NAME}}"
-        ..attributionText = "SPONSORED",
+      // iosParam: IOSParam()
+      //   ..placementId = "ca-app-pub-3940256099942544/3986624511" // test
+      //   ..bundleId = "{{YOUR_IOS_APP_BUNDLE_ID}}"
+      //   ..layoutName = "{{YOUR_CREATED_LAYOUT_FILE_NAME}}"
+      //   ..attributionText = "SPONSORED",
       onAdImpression: () => print("onAdImpression!!!"),
       onAdClicked: () => print("onAdClicked!!!"),
-      onAdFailedToLoad: (Map<String, dynamic> error) =>
-          print("onAdFailedToLoad!!! $error"),
-      onAdLoaded: () => print("Loading"),
+      // onAdFailedToLoad: (Map<String, dynamic> error) =>
+      //     print("onAdFailedToLoad!!! $error"),
+      // onAdLoaded: () => print("Loading"),
     );
   }
 

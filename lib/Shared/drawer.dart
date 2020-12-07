@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:wallpaper_app/Screens/%20favorite/Save.dart';
 import 'package:wallpaper_app/Screens/About/About.dart';
 import 'package:wallpaper_app/Screens/HomeScreen.dart';
@@ -67,6 +68,8 @@ class _DrawerListState extends State<DrawerList> {
               color: Colors.grey,
             ),
             OpenList(Icons.favorite, 'Saved', () {
+                 FirebaseAnalytics().logEvent(
+                      name: 'saved_wallpaper_open');
               interstitialAd..show();
               Navigator.of(context)
                   .push(MaterialPageRoute(builder: (context) => Save()));

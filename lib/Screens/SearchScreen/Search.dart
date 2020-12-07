@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:wallpaper_app/Scraping/scraping.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -9,9 +10,10 @@ import '../SubCategoriesScreen/Sub_catagories.dart';
 class Search extends StatefulWidget {
   @override
   _SearchState createState() => _SearchState();
-  Search({this.url, this.name});
- final String url;
- final String name;
+  Search({this.url, this.name, this.category});
+  final String category;
+  final String url;
+  final String name;
 }
 
 class _SearchState extends State<Search> {
@@ -76,7 +78,7 @@ class _SearchState extends State<Search> {
                 ),
               ),
               Container(
-                  height: MediaQuery.of(context).size.height*0.9,
+                  height: MediaQuery.of(context).size.height * 0.9,
                   child: wallpaper())
             ],
           ),
@@ -105,12 +107,21 @@ class _SearchState extends State<Search> {
                 onTap: () {
                   Pref().adsetData();
                   Pref().adsaveData();
+                  FirebaseAnalytics().logEvent(
+                      name: 'wallpaper_open',
+                      parameters: {
+                        'category_name':
+                            widget.category == null ? 'Search' : widget.category
+                      });
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => Sliders(
                               page: index,
                               lists: categorieslist,
+                              catagory: widget.category == null
+                                  ? 'Search'
+                                  : widget.category,
                             )),
                   );
                 },

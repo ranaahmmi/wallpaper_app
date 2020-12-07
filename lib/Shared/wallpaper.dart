@@ -12,8 +12,7 @@ class Wallpaper {
     ].request();
     StreamController<String> streamController = new StreamController();
     try {
-      final dir = await ExtStorage.getExternalStoragePublicDirectory(
-          ExtStorage.DIRECTORY_PICTURES);
+      final dir = await ExtStorage.getExternalStorageDirectory();
       print(dir);
       Dio dio = new Dio();
       dio.download(
