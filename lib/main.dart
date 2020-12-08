@@ -8,7 +8,6 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:wallpaper_app/Screens/SubCategoriesScreen/Sub_catagories.dart';
 
-import 'Screens/SliderScreen/slider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
