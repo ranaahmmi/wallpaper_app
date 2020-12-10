@@ -1,10 +1,10 @@
-
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wallpaper_app/Shared/Shared_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:velocity_x/velocity_x.dart';
 import '../PreviewScreen/Preview.dart';
 
 class Save extends StatefulWidget {
@@ -22,6 +22,7 @@ class _SaveState extends State<Save> {
   @override
   void dispose() {
     super.dispose();
+    savepref();
   }
 
   sharepref() async {
@@ -29,6 +30,11 @@ class _SaveState extends State<Save> {
     setState(() {
       favlist = prefs.getStringList('favlist') ?? [];
     });
+  }
+
+  savepref() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('favlist', favlist);
   }
 
   List<String> favlist = [];
@@ -55,7 +61,7 @@ class _SaveState extends State<Save> {
                 ),
               ),
               Container(
-                  height: MediaQuery.of(context).size.height*0.9,
+                  height: MediaQuery.of(context).size.height * 0.9,
                   child: wallpaper())
             ],
           ),
@@ -69,31 +75,50 @@ class _SaveState extends State<Save> {
         ? GridView.builder(
             itemCount: favlist.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisSpacing: 5,
               crossAxisCount: 3,
-              mainAxisSpacing: 2,
-              childAspectRatio: MediaQuery.of(context).size.width /
-                  (MediaQuery.of(context).size.height / 1.2),
+              mainAxisSpacing: 5,
+              childAspectRatio: 0.56
             ),
             itemBuilder: (BuildContext context, int index) {
-              return GestureDetector(
-                onTap: () {
-                  Pref().adsetData();
-                  Pref().adsaveData();
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => Preview(
-                            src: favlist[index],
-                          )));
-                },
-                child: Container(
-                    padding: const EdgeInsets.all(2),
-                    child: Image.network(
-                      favlist[index],
-                      fit: BoxFit.fitWidth,
-                    )),
+              return Stack(
+                children: [
+                  GestureDetector(
+                      onTap: () {
+                        Pref().adsetData();
+                        Pref().adsaveData();
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => Preview(
+                                  src: favlist[index],
+                                )));
+                      },
+                      child: CachedNetworkImage(
+                        imageUrl: favlist[index],
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Center(
+                          child: SpinKitCubeGrid(
+                            color: Colors.white,
+                            size: 35.0,
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      )),
+                  Align(
+                      alignment: Alignment.topRight,
+                      child: Icon(
+                        Icons.remove_circle,
+                        color: Colors.red[900],
+                      )).onTap(() {
+                    setState(() {
+                      print('tab');
+                      favlist.removeAt(index);
+                    });
+                  })
+                ],
               );
             })
         : Center(
-            child: CircularProgressIndicator(),
+            child: 'No Favourite Found'.text.white.bold.xl2.makeCentered(),
           );
   }
 }

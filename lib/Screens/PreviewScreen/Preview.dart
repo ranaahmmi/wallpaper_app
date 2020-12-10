@@ -1,11 +1,16 @@
-import 'package:ext_storage/ext_storage.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:gallery_saver/gallery_saver.dart';
+import 'package:velocity_x/velocity_x.dart';
 import 'package:wallpaper_app/Shared/Shared_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:wallpaper_app/Shared/wallpaper.dart';
-import 'package:wallpaperplugin/wallpaperplugin.dart';
 import 'dart:ui';
 
 import 'dart:async';
+
+import 'package:wallpaper_manager/wallpaper_manager.dart';
 
 class Preview extends StatefulWidget {
   Preview({this.src});
@@ -76,27 +81,25 @@ class _PreviewState extends State<Preview> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   IconButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      setState(() {
+                        downloading = true;
+                      });
+
                       Pref().saveData();
                       Pref().setData();
-                      progressString = Wallpaper.imageDownload(widget.src);
-
-                      progressString.listen((data) {
-                        setState(() {
-                          res = data;
-                          downloading = true;
-                        });
-                      }, onDone: () {
-                        setState(() {
-                          downloading = false;
-                          home = home;
-                        });
-                        print("Task Done");
-                      }, onError: (error) {
+                      GallerySaver.saveImage(widget.src,
+                              albumName: 'Ez Wallpaper')
+                          .then((data) {
+                        FirebaseAnalytics().logEvent(
+                            name: 'wallpaper_download',
+                            parameters: {'category_name': 'Preview'});
                         setState(() {
                           downloading = false;
                         });
-                        print("Some Error");
+                        VxToast.show(context,
+                            msg:
+                                data == true ? 'Save Sucessfully' : 'Not Save');
                       });
                     },
                     icon: Image.asset(
@@ -107,34 +110,23 @@ class _PreviewState extends State<Preview> {
                   ),
                   SizedBox(width: 10),
                   IconButton(
-                    onPressed: () {
-                      progressString =
-                          Wallpaper.imageDownloadProgress(widget.src);
-
-                      progressString.listen((data) {
-                        setState(() {
-                          res = data;
-                          downloading = true;
-                        });
-                      }, onDone: () async {
-                        print('done');
-                        final dir =
-                            await ExtStorage.getExternalStoragePublicDirectory(
-                                ExtStorage.DIRECTORY_PICTURES);
-
-                        Wallpaperplugin.setAutoWallpaper(
-                            localFile: '$dir/myimage.jpeg');
-                        setState(() {
-                          downloading = false;
-                          home = home;
-                        });
-                        print("Task Done");
-                      }, onError: (error) {
-                        setState(() {
-                          downloading = false;
-                        });
-                        print("Some Error");
+                    onPressed: () async {
+                      setState(() {
+                        downloading = true;
                       });
+                      String result;
+                      var file =
+                          await DefaultCacheManager().getSingleFile(widget.src);
+                      try {
+                        result = await WallpaperManager.setWallpaperFromFile(
+                            file.path, WallpaperManager.BOTH_SCREENS);
+                      } on PlatformException {
+                        result = 'Failed to get wallpaper.';
+                      }
+                      setState(() {
+                        downloading = false;
+                      });
+                      VxToast.show(context, msg: result);
                     },
                     icon: Image.asset(
                       'assets/setwallpaper.png',
@@ -154,27 +146,19 @@ class _PreviewState extends State<Preview> {
   }
 
   Widget dialog() {
-    return Positioned(
-      top: 200,
-      left: 95,
-      child: downloading
-          ? Container(
-              height: 120.0,
-              width: 200.0,
-              child: Card(
-                color: Colors.black,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    CircularProgressIndicator(),
-                    SizedBox(height: 20.0),
-                    Text(
-                      "Downloading File : $res",
-                      style: TextStyle(color: Colors.white),
-                    )
-                  ],
+    return Align(
+      alignment: Alignment.center,
+      child: downloading == true
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SpinKitFoldingCube(
+                  size: 100,
+                  color: Colors.white,
                 ),
-              ),
+                20.heightBox,
+                "Loading..".text.xl2.white.makeCentered()
+              ],
             )
           : Text(""),
     );

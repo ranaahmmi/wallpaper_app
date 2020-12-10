@@ -23,23 +23,24 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  cached_network_image: ^2.4.1
   carousel_slider: ^2.3.1
   cupertino_icons: ^1.0.0
-  dio: ^3.0.10
-  ext_storage: ^1.0.3
   firebase_admob: ^0.10.2
   firebase_analytics: ^6.2.0
   firebase_crashlytics: ^0.2.3+1
+  flutter_cache_manager: ^2.0.0
+  flutter_spinkit: ^4.1.2+1
+  gallery_saver: ^2.0.1
   html: ^0.14.0+4
   http: ^0.12.2
-  image_downloader: ^0.20.1
-  image_picker_saver: ^0.3.0
   native_ads: ^0.5.0
+  path_provider: ^1.6.24
   permission_handler: ^5.0.1+1
   shared_preferences: ^0.5.12+4
-  store_redirect: ^1.0.2
+  sliding_sheet: ^0.4.1
   velocity_x: ^1.0.1
-  wallpaperplugin: ^0.1.1
+  wallpaper_manager: ^1.0.10
 
 dev_dependencies:
   flutter_test:

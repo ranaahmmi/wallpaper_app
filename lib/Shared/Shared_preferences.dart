@@ -21,8 +21,6 @@ class Pref {
 
   setData() {
     loadData().then((value) {
-      print(value);
-      j = value;
     });
   }
 

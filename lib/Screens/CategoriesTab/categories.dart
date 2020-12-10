@@ -212,7 +212,7 @@ class _CategoriesState extends State<Categories> {
     {
       'name': 'Technologies',
       'picture': 'assets/technologies.png',
-      'url': 'https://wallpaperscraft.com/catalog/technologies/1080x1920'
+      'url': 'https://wallpaperscraft.com/catalog/hi-tech/1080x1920'
     },
     {
       'name': 'Textures',

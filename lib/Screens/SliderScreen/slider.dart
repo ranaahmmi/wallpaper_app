@@ -1,6 +1,10 @@
 import 'dart:math';
-import 'package:ext_storage/ext_storage.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:gallery_saver/gallery_saver.dart';
+import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:wallpaper_app/Screens/PreviewScreen/Preview.dart';
 import 'package:wallpaper_app/Shared/Shared_preferences.dart';
 import 'package:wallpaper_app/Scraping/scraping.dart';
@@ -10,10 +14,9 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wallpaper_app/Shared/wallpaper.dart';
-import 'package:wallpaperplugin/wallpaperplugin.dart';
 import 'dart:ui';
 import 'package:velocity_x/velocity_x.dart';
+import 'package:wallpaper_manager/wallpaper_manager.dart';
 
 class Sliders extends StatefulWidget {
   Sliders({this.page, this.lists, @required this.catagory});
@@ -29,15 +32,10 @@ class Sliders extends StatefulWidget {
 }
 
 class SlidersState extends State<Sliders> {
-  String home = "Home Screen",
-      lock = "Lock Screen",
-      both = "Both Screen",
-      system = "System";
   Stream<String> progressString;
   String res;
   bool downloading = false;
 
-  // int a = 1;
   String back = '';
 
   @override
@@ -86,6 +84,10 @@ class SlidersState extends State<Sliders> {
                               onPageChanged: (value, e) {
                                 setState(() {
                                   widget.page = value;
+                                  // favList.any((element) =>
+                                  //         element == sliderList[value])
+                                  //     ? alreadySaved = true
+                                  //     :
                                   alreadySaved = false;
                                   value % 10 == rand ? ad = true : ad = false;
                                   adshow = false;
@@ -95,7 +97,7 @@ class SlidersState extends State<Sliders> {
                                 });
                               }),
                           itemBuilder: (BuildContext context, int itemIndex) {
-                            if (itemIndex % 10 == rand) {
+                            if (itemIndex % 10 == rand || adshow == true) {
                               // ad column
                               return Column(
                                 children: <Widget>[
@@ -111,7 +113,7 @@ class SlidersState extends State<Sliders> {
                                                   .height *
                                               0.7,
                                           padding: const EdgeInsets.all(5),
-                                          color: Colors.black45,
+                                          color: Colors.grey[700],
                                           child: aad(),
                                         )),
                                   ),
@@ -119,113 +121,82 @@ class SlidersState extends State<Sliders> {
                                 ],
                               );
                             }
-                            return adshow == false
-                                ? Container(
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10),
-                                      child: Column(
-                                        children: <Widget>[
-                                          GestureDetector(
-                                            onTap: () {
-                                              FirebaseAnalytics().logEvent(
-                                                  name: 'wallpaper_preview',
-                                                  parameters: {
-                                                    'category_name':
-                                                        widget.catagory
-                                                  });
-                                              Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          Preview(
-                                                            src: sliderList[
-                                                                    itemIndex]
-                                                                ['extra'],
-                                                          )));
-                                            },
-                                            child: Container(
-                                              height: MediaQuery.of(context)
-                                                      .size
-                                                      .height *
-                                                  0.69,
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(25.0),
-                                                child: Image.network(
-                                                    sliderList[itemIndex]
-                                                        ['final'],
-                                                    fit: BoxFit.fill,
-                                                    loadingBuilder: (BuildContext
-                                                            context,
-                                                        Widget child,
-                                                        ImageChunkEvent
-                                                            loadingProgress) {
-                                                  if (loadingProgress == null)
-                                                    return child;
-                                                  return Stack(
-                                                    children: <Widget>[
-                                                      Container(
-                                                        height: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .height *
-                                                            0.7,
-                                                        child: Image.network(
-                                                            sliderList[
-                                                                    itemIndex]
-                                                                ['src'],
-                                                            fit: BoxFit.fill),
-                                                      ),
-                                                      Center(
-                                                        child:
-                                                            CircularProgressIndicator(
-                                                          valueColor:
-                                                              new AlwaysStoppedAnimation<
-                                                                      Color>(
-                                                                  Colors.red),
-                                                          value: loadingProgress
-                                                                      .expectedTotalBytes !=
-                                                                  null
-                                                              ? loadingProgress
-                                                                      .cumulativeBytesLoaded /
-                                                                  loadingProgress
-                                                                      .expectedTotalBytes
-                                                              : null,
-                                                        ),
-                                                      )
-                                                    ],
-                                                  );
-                                                }),
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(height: 6),
-                                          buttonRow(itemIndex, widget.catagory),
-                                        ],
+                            return Container(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                child: Column(
+                                  children: <Widget>[
+                                    GestureDetector(
+                                      onTap: () {
+                                        FirebaseAnalytics().logEvent(
+                                            name: 'wallpaper_preview',
+                                            parameters: {
+                                              'category_name': widget.catagory
+                                            });
+                                        Navigator.of(context)
+                                            .push(MaterialPageRoute(
+                                                builder: (context) => Preview(
+                                                      src: sliderList[itemIndex]
+                                                          ['extra'],
+                                                    )));
+                                      },
+                                      child: Container(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.69,
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(25.0),
+                                          child: Image.network(
+                                              sliderList[itemIndex]['final'],
+                                              fit: BoxFit.fill, loadingBuilder:
+                                                  (BuildContext context,
+                                                      Widget child,
+                                                      ImageChunkEvent
+                                                          loadingProgress) {
+                                            if (loadingProgress == null)
+                                              return child;
+                                            return Stack(
+                                              children: <Widget>[
+                                                Container(
+                                                  height: MediaQuery.of(context)
+                                                          .size
+                                                          .height *
+                                                      0.7,
+                                                  child: Image.network(
+                                                      sliderList[itemIndex]
+                                                          ['src'],
+                                                      fit: BoxFit.fill),
+                                                ),
+                                                Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    valueColor:
+                                                        new AlwaysStoppedAnimation<
+                                                            Color>(Colors.red),
+                                                    value: loadingProgress
+                                                                .expectedTotalBytes !=
+                                                            null
+                                                        ? loadingProgress
+                                                                .cumulativeBytesLoaded /
+                                                            loadingProgress
+                                                                .expectedTotalBytes
+                                                        : null,
+                                                  ),
+                                                )
+                                              ],
+                                            );
+                                          }),
+                                        ),
                                       ),
                                     ),
-                                  )
-                                : Column(
-                                    children: <Widget>[
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10),
-                                        child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(25.0),
-                                            child: Container(
-                                              height: MediaQuery.of(context)
-                                                      .size
-                                                      .height *
-                                                  0.7,
-                                              padding: const EdgeInsets.all(5),
-                                              color: Colors.black45,
-                                              child: aad(),
-                                            )),
-                                      ),
-                                      SizedBox(height: 10)
-                                    ],
-                                  );
+                                    SizedBox(height: 6),
+                                    buttonRow(itemIndex, widget.catagory),
+                                  ],
+                                ),
+                              ),
+                            );
                           },
                         ),
                         loadingDialog(),
@@ -242,7 +213,7 @@ class SlidersState extends State<Sliders> {
                   child: ad == false
                       ? Container(
                           height: 65,
-                          color: Colors.black45,
+                          color: Colors.grey[700],
                           child: NativeAdView(
                             onParentViewCreated: (_) {},
                             androidParam: AndroidParam()
@@ -273,32 +244,28 @@ class SlidersState extends State<Sliders> {
               color: Colors.black45, borderRadius: BorderRadius.circular(50)),
           child: IconButton(
             onPressed: () {
+              setState(() {
+                downloading = true;
+              });
+
               Pref().saveData();
               Pref().setData();
-              progressString =
-                  Wallpaper.imageDownload(sliderList[itemIndex]['extra']);
-              progressString.listen((data) {
+              GallerySaver.saveImage(sliderList[itemIndex]['extra'],
+                      albumName: 'Ez Wallpaper')
+                  .then((data) {
                 setState(() {
-                  res = data;
-                  downloading = true;
-                });
-              }, onDone: () {
-                FirebaseAnalytics().logEvent(
-                    name: 'wallpaper_download',
-                    parameters: {'category_name': category});
-                timer = new Timer(const Duration(milliseconds: 3000), () {
-                  setState(() {
-                    adshow = true;
-                    downloading = false;
-                    home = home;
+                  FirebaseAnalytics().logEvent(
+                      name: 'wallpaper_download',
+                      parameters: {'category_name': category});
+                  timer = new Timer(const Duration(milliseconds: 3000), () {
+                    setState(() {
+                      adshow = true;
+                      downloading = false;
+                    });
+                    VxToast.show(context,
+                        msg: data == true ? 'Save Sucessfully' : 'Not Save');
                   });
-                  print("Task Done");
                 });
-              }, onError: (error) {
-                setState(() {
-                  downloading = false;
-                });
-                print("Some Error");
               });
             },
             icon: Image.asset(
@@ -313,35 +280,9 @@ class SlidersState extends State<Sliders> {
           decoration: BoxDecoration(
               color: Colors.black45, borderRadius: BorderRadius.circular(50)),
           child: IconButton(
-            onPressed: () {
-              progressString = Wallpaper.imageDownloadProgress(
-                  sliderList[itemIndex]['extra']);
-              progressString.listen((data) {
-                setState(() {
-                  res = data;
-                  downloading = true;
-                });
-              }, onDone: () async {
-                FirebaseAnalytics().logEvent(
-                    name: 'wallpaper_set',
-                    parameters: {'category_name': category});
-                final dir = await ExtStorage.getExternalStorageDirectory();
-
-                Wallpaperplugin.setAutoWallpaper(
-                    localFile: '$dir/myimage.jpeg');
-                timer = new Timer(const Duration(milliseconds: 1000), () {
-                  setState(() {
-                    adshow = true;
-                    downloading = false;
-                    home = home;
-                  });
-                });
-              }, onError: (error) {
-                setState(() {
-                  downloading = false;
-                });
-                print("Some Error");
-              });
+            onPressed: () async {
+              showAsBottomSheet(context,
+                  category: category, url: sliderList[itemIndex]['extra']);
             },
             icon: Image.asset(
               'assets/setwallpaper.png',
@@ -387,7 +328,7 @@ class SlidersState extends State<Sliders> {
   List<String> favList = [];
   bool alreadySaved = false;
   bool ad = false;
-  var rng = new Random();
+
   int rand = 99;
   Timer timer;
   bool adshow = false;
@@ -423,7 +364,7 @@ class SlidersState extends State<Sliders> {
   @override
   void initState() {
     WidgetsFlutterBinding.ensureInitialized();
-    rand = rng.nextInt(8);
+    rand = Random().nextInt(7) + 1;
     sharepref();
     sliderList = widget.lists;
     super.initState();
@@ -474,7 +415,7 @@ class SlidersState extends State<Sliders> {
       child: downloading
           ? Container(
               margin: const EdgeInsets.symmetric(vertical: 50),
-              color: Colors.black45,
+              color: Colors.grey[700],
               width: 300.0,
               child: Column(
                 children: <Widget>[
@@ -485,19 +426,20 @@ class SlidersState extends State<Sliders> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         SizedBox(height: 15),
-                        CircularProgressIndicator(),
-                        SizedBox(height: 20.0),
-                        Text(
-                          "Downloading File : $res",
-                          style: TextStyle(color: Colors.white),
-                        )
+                        SpinKitFadingCube(
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        20.heightBox,
+                        'Loading...'.text.white.makeCentered()
                       ],
                     ),
                   ),
                   Divider(height: 15, color: Colors.white),
                   Container(
                     height: 300,
-                    // child: aad(),
+                    color: Colors.grey[700],
+                    child: aad(),
                   )
                 ],
               ),
@@ -505,7 +447,116 @@ class SlidersState extends State<Sliders> {
           : Text(""),
     );
   }
+
+  showAsBottomSheet(context, {String url, String category}) async {
+    await showSlidingBottomSheet(context, builder: (context) {
+      return SlidingSheetDialog(
+        color: Colors.black,
+        backdropColor: Colors.black.withOpacity(0.4),
+        elevation: 8,
+        cornerRadius: 16,
+        snapSpec: const SnapSpec(
+          snappings: [0.9, 0.7, 1.0],
+          positioning: SnapPositioning.relativeToAvailableSpace,
+        ),
+        builder: (context, state) {
+          return Container(
+            height: 150,
+            child: Material(
+                color: Colors.black.withOpacity(0.5),
+                child: Center(
+                  child: Wrap(
+                    spacing: 10.0, // gap between adjacent chips
+                    runSpacing: 10.0,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    alignment: WrapAlignment.center,
+
+                    children: [
+                      setWallpaperButton(
+                              url: url,
+                              category: category,
+                              text: 'Home Screen',
+                              icon: Icons.home,
+                              location: 'HomeScreen')
+                          .w(150),
+                      setWallpaperButton(
+                              url: url,
+                              category: category,
+                              text: 'Lock Screen',
+                              icon: Icons.phonelink_lock_sharp,
+                              location: 'LockScreen')
+                          .w(150),
+                      setWallpaperButton(
+                              url: url,
+                              category: category,
+                              text: 'Both Screen',
+                              icon: Icons.all_inbox_rounded,
+                              location: 'Both')
+                          .w(150)
+                    ],
+                  ),
+                )),
+          );
+        },
+      );
+    });
+  }
+
+  Widget setWallpaperButton(
+      {@required String url,
+      @required String category,
+      @required String text,
+      @required IconData icon,
+      @required String location}) {
+    return VxBox(
+            child: Row(
+      children: [
+        Icon(
+          icon,
+          color: Colors.white,
+        ),
+        text.text.white.make()
+      ],
+    ))
+        .padding(EdgeInsets.symmetric(horizontal: 10))
+        .border(color: Colors.grey, style: BorderStyle.solid)
+        .roundedLg
+        .height(40)
+        .make()
+        .onTap(() async {
+      Navigator.pop(context);
+      setState(() {
+        downloading = true;
+      });
+      String result;
+      var file = await DefaultCacheManager().getSingleFile(url);
+
+      try {
+        result = location == 'HomeScreen'
+            ? await WallpaperManager.setWallpaperFromFile(
+                file.path, WallpaperManager.HOME_SCREEN)
+            : location == 'LockScreen'
+                ? await WallpaperManager.setWallpaperFromFile(
+                    file.path, WallpaperManager.LOCK_SCREEN)
+                : await WallpaperManager.setWallpaperFromFile(
+                    file.path, WallpaperManager.BOTH_SCREENS);
+      } on PlatformException {
+        result = 'Failed to get wallpaper.';
+      }
+
+      VxToast.show(context, msg: result);
+      FirebaseAnalytics().logEvent(
+          name: 'wallpaper_set', parameters: {'category_name': category});
+      setState(() {
+        timer = new Timer(const Duration(milliseconds: 3000), () {
+          setState(() {
+            adshow = true;
+            downloading = false;
+          });
+        });
+      });
+    });
+  }
 }
 
-int j = 1;
 var sliderList = [];
