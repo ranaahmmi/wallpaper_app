@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gallery_saver/gallery_saver.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:wallpaper_app/Screens/PreviewScreen/Preview.dart';
 import 'package:wallpaper_app/Shared/Shared_preferences.dart';
@@ -243,7 +244,8 @@ class SlidersState extends State<Sliders> {
           decoration: BoxDecoration(
               color: Colors.black45, borderRadius: BorderRadius.circular(50)),
           child: IconButton(
-            onPressed: () {
+            onPressed: () async {
+              await Permission.storage.request();
               setState(() {
                 downloading = true;
               });

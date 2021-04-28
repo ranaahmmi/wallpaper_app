@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gallery_saver/gallery_saver.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:wallpaper_app/Shared/Shared_preferences.dart';
 import 'package:flutter/material.dart';
@@ -82,6 +83,7 @@ class _PreviewState extends State<Preview> {
                 children: <Widget>[
                   IconButton(
                     onPressed: () async {
+                      await Permission.storage.request();
                       setState(() {
                         downloading = true;
                       });

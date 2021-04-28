@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="Ez Wallpaper 4k"
+        android:label="Wallpapers Daily 2021"
         android:icon="@mipmap/ic_launcher">
 
         <activity
