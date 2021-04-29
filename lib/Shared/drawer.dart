@@ -40,7 +40,7 @@ class _DrawerListState extends State<DrawerList> {
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Image.asset(
-                            'assets/logo.png',
+                            'assets/logo1.png',
                             width: 40,
                             height: 40,
                           ),
@@ -48,7 +48,7 @@ class _DrawerListState extends State<DrawerList> {
                       ),
                     ),
                     Text(
-                      'Ez Wallpaper',
+                      'Wallpapers Daily 2021',
                       style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
                     Divider(
@@ -68,8 +68,7 @@ class _DrawerListState extends State<DrawerList> {
               color: Colors.grey,
             ),
             OpenList(Icons.favorite, 'Saved', () {
-                 FirebaseAnalytics().logEvent(
-                      name: 'saved_wallpaper_open');
+              FirebaseAnalytics().logEvent(name: 'saved_wallpaper_open');
               interstitialAd..show();
               Navigator.of(context)
                   .push(MaterialPageRoute(builder: (context) => Save()));
@@ -98,8 +97,8 @@ class _DrawerListState extends State<DrawerList> {
 }
 
 class OpenList extends StatelessWidget {
- final IconData icon;
- final String text;
+  final IconData icon;
+  final String text;
   final Function onTap;
   OpenList(this.icon, this.text, this.onTap);
   @override

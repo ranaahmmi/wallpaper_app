@@ -4,6 +4,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:wallpaper_app/Shared/Shared_preferences.dart';
 import 'package:flutter/material.dart';
@@ -77,74 +78,135 @@ class _PreviewState extends State<Preview> {
                       ],
                     )),
               ),
-              SizedBox(height: MediaQuery.of(context).size.height * 0.7),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  IconButton(
-                    onPressed: () async {
-                      await Permission.storage.request();
-                      setState(() {
-                        downloading = true;
-                      });
-
-                      Pref().saveData();
-                      Pref().setData();
-                      GallerySaver.saveImage(widget.src,
-                              albumName: 'Ez Wallpaper')
-                          .then((data) {
-                        FirebaseAnalytics().logEvent(
-                            name: 'wallpaper_download',
-                            parameters: {'category_name': 'Preview'});
-                        setState(() {
-                          downloading = false;
-                        });
-                        VxToast.show(context,
-                            msg:
-                                data == true ? 'Save Sucessfully' : 'Not Save');
-                      });
-                    },
-                    icon: Image.asset(
-                      'assets/download.png',
-                      color: Colors.white,
-                    ),
-                    iconSize: 46,
-                  ),
-                  SizedBox(width: 10),
-                  IconButton(
-                    onPressed: () async {
-                      setState(() {
-                        downloading = true;
-                      });
-                      String result;
-                      var file =
-                          await DefaultCacheManager().getSingleFile(widget.src);
-                      try {
-                        result = await WallpaperManager.setWallpaperFromFile(
-                            file.path, WallpaperManager.BOTH_SCREENS);
-                      } on PlatformException {
-                        result = 'Failed to get wallpaper.';
-                      }
-                      setState(() {
-                        downloading = false;
-                      });
-                      VxToast.show(context, msg: result);
-                    },
-                    icon: Image.asset(
-                      'assets/setwallpaper.png',
-                      color: Colors.white,
-                    ),
-                    iconSize: 46,
-                  ),
-                  SizedBox(width: 10),
-                ],
-              ),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.6),
+              Container(
+                      decoration: BoxDecoration(
+                          color: Colors.black45,
+                          borderRadius: BorderRadius.circular(50),
+                          border: Border.all(color: Colors.white)),
+                      child:
+                          'Apply now'.text.white.make().pSymmetric(h: 20, v: 5)
+                      //  Image.asset(
+                      //   'assets/setwallpaper.png',
+                      //   height: 46,
+                      //   color: Colors.white,
+                      // ),
+                      )
+                  .onTap(() async {
+                showAsBottomSheet(context,
+                    category: 'Priview', url: widget.src);
+              }),
             ],
           ),
           dialog()
         ],
       ),
     );
+  }
+
+  showAsBottomSheet(context, {String url, String category}) async {
+    await showSlidingBottomSheet(context, builder: (context) {
+      return SlidingSheetDialog(
+        color: Colors.black,
+        backdropColor: Colors.black.withOpacity(0.4),
+        elevation: 8,
+        cornerRadius: 16,
+        snapSpec: const SnapSpec(
+          snappings: [0.9, 0.7, 1.0],
+          positioning: SnapPositioning.relativeToAvailableSpace,
+        ),
+        builder: (context, state) {
+          return Container(
+            height: 150,
+            child: Material(
+                color: Colors.black.withOpacity(0.5),
+                child: Center(
+                  child: Wrap(
+                    spacing: 10.0, // gap between adjacent chips
+                    runSpacing: 10.0,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    alignment: WrapAlignment.center,
+
+                    children: [
+                      setWallpaperButton(
+                              url: url,
+                              category: category,
+                              text: 'Home Screen',
+                              icon: Icons.home,
+                              location: 'HomeScreen')
+                          .w(150),
+                      setWallpaperButton(
+                              url: url,
+                              category: category,
+                              text: 'Lock Screen',
+                              icon: Icons.phonelink_lock_sharp,
+                              location: 'LockScreen')
+                          .w(150),
+                      setWallpaperButton(
+                              url: url,
+                              category: category,
+                              text: 'Both Screen',
+                              icon: Icons.all_inbox_rounded,
+                              location: 'Both')
+                          .w(150)
+                    ],
+                  ),
+                )),
+          );
+        },
+      );
+    });
+  }
+
+  Widget setWallpaperButton(
+      {@required String url,
+      @required String category,
+      @required String text,
+      @required IconData icon,
+      @required String location}) {
+    return VxBox(
+            child: Row(
+      children: [
+        Icon(
+          icon,
+          color: Colors.white,
+        ),
+        text.text.white.make()
+      ],
+    ))
+        .padding(EdgeInsets.symmetric(horizontal: 10))
+        .border(color: Colors.grey, style: BorderStyle.solid)
+        .roundedLg
+        .height(40)
+        .make()
+        .onTap(() async {
+      Navigator.pop(context);
+      setState(() {
+        downloading = true;
+      });
+      String result;
+      var file = await DefaultCacheManager().getSingleFile(url);
+
+      try {
+        result = location == 'HomeScreen'
+            ? await WallpaperManager.setWallpaperFromFile(
+                file.path, WallpaperManager.HOME_SCREEN)
+            : location == 'LockScreen'
+                ? await WallpaperManager.setWallpaperFromFile(
+                    file.path, WallpaperManager.LOCK_SCREEN)
+                : await WallpaperManager.setWallpaperFromFile(
+                    file.path, WallpaperManager.BOTH_SCREENS);
+      } on PlatformException {
+        result = 'Failed to get wallpaper.';
+      }
+      setState(() {
+        downloading = false;
+      });
+
+      VxToast.show(context, msg: result);
+      FirebaseAnalytics().logEvent(
+          name: 'wallpaper_set', parameters: {'category_name': category});
+    });
   }
 
   Widget dialog() {
@@ -154,12 +216,12 @@ class _PreviewState extends State<Preview> {
           ? Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SpinKitFoldingCube(
-                  size: 100,
+                SpinKitFadingCircle(
+                  size: 40,
                   color: Colors.white,
                 ),
-                20.heightBox,
-                "Loading..".text.xl2.white.makeCentered()
+                10.heightBox,
+                "Loading...".text.bold.xl.italic.white.makeCentered().shimmer()
               ],
             )
           : Text(""),

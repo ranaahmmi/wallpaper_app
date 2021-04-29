@@ -1,12 +1,9 @@
 import 'dart:math';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:like_button/like_button.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:wallpaper_app/Screens/PreviewScreen/Preview.dart';
 import 'package:wallpaper_app/Shared/Shared_preferences.dart';
 import 'package:wallpaper_app/Scraping/scraping.dart';
@@ -18,7 +15,6 @@ import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:ui';
 import 'package:velocity_x/velocity_x.dart';
-import 'package:wallpaper_manager/wallpaper_manager.dart';
 
 class Sliders extends StatefulWidget {
   Sliders({this.page, this.lists, @required this.catagory});
@@ -85,7 +81,7 @@ class SlidersState extends State<Sliders> {
                               onPageChanged: (value, e) {
                                 setState(() {
                                   widget.page = value;
-                                  alreadySaved = false;
+                                  // alreadySaved = false;
                                   value % 10 == rand ? ad = true : ad = false;
                                   adshow = false;
                                   sliderList.length - 2 == value
@@ -93,7 +89,8 @@ class SlidersState extends State<Sliders> {
                                       : Text('');
                                 });
                               }),
-                          itemBuilder: (BuildContext context, int itemIndex) {
+                          itemBuilder:
+                              (BuildContext context, int itemIndex, a) {
                             if (itemIndex % 10 == rand || adshow == true) {
                               // ad column
                               return Column(
@@ -188,7 +185,7 @@ class SlidersState extends State<Sliders> {
                                         ),
                                       ),
                                     ),
-                                    SizedBox(height: 6),
+                                    SizedBox(height: 10),
                                     buttonRow(itemIndex, widget.catagory),
                                   ],
                                 ),
@@ -237,140 +234,97 @@ class SlidersState extends State<Sliders> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Container(
-          decoration: BoxDecoration(
-              color: Colors.black45, borderRadius: BorderRadius.circular(50)),
-          child: IconButton(
-            onPressed: () async {
-              await Permission.storage.request();
-              setState(() {
-                downloading = true;
-              });
+                decoration: BoxDecoration(
+                    color: Colors.black45,
+                    borderRadius: BorderRadius.circular(99)),
+                child: Image.asset(
+                  'assets/download.png',
+                  height: 40,
+                ).p(5))
+            .onTap(() async {
+          await Permission.storage.request();
+          setState(() {
+            downloading = true;
+          });
 
-              Pref().saveData();
-              Pref().setData();
-              GallerySaver.saveImage(sliderList[itemIndex]['extra'],
-                      albumName: 'Ez Wallpaper')
-                  .then((data) {
+          Pref().saveData();
+          Pref().setData();
+          GallerySaver.saveImage(sliderList[itemIndex]['extra'],
+                  albumName: 'Ez Wallpaper')
+              .then((data) {
+            setState(() {
+              FirebaseAnalytics().logEvent(
+                  name: 'wallpaper_download',
+                  parameters: {'category_name': category});
+              timer = new Timer(const Duration(milliseconds: 3000), () {
                 setState(() {
-                  FirebaseAnalytics().logEvent(
-                      name: 'wallpaper_download',
-                      parameters: {'category_name': category});
-                  timer = new Timer(const Duration(milliseconds: 3000), () {
-                    setState(() {
-                      adshow = true;
-                      downloading = false;
-                    });
-                    VxToast.show(context,
-                        msg: data == true ? 'Save Sucessfully' : 'Not Save');
-                  });
+                  adshow = true;
+                  downloading = false;
                 });
+                VxToast.show(context,
+                    msg: data == true ? 'Save Sucessfully' : 'Not Save');
               });
-            },
-            icon: Image.asset(
-              'assets/download.png',
-            ),
-            iconSize: 46,
-          ),
-        ),
-        SizedBox(width: 10),
+            });
+          });
+        }),
+        SizedBox(width: 20),
         Container(
           decoration: BoxDecoration(
-              color: Colors.black45, borderRadius: BorderRadius.circular(50)),
-          child: IconButton(
-            onPressed: () async {
-              showAsBottomSheet(context,
-                  category: category, url: sliderList[itemIndex]['extra']);
-            },
-            icon: Image.asset(
-              'assets/setwallpaper.png',
-              color: Colors.white,
+              color: Colors.black45, borderRadius: BorderRadius.circular(99)),
+          child: Center(
+              child: LikeButton(
+            animationDuration: Duration(milliseconds: 700),
+            bubblesSize: 120,
+            size: 40,
+            circleColor:
+                CircleColor(start: Color(0xFFFF3C00), end: Color(0xFF5E220A)),
+            bubblesColor: BubblesColor(
+              dotPrimaryColor: Color(0xFFFF3C00),
+              dotSecondaryColor: Color(0xFFC74512),
             ),
-            iconSize: 46,
-          ),
-        ),
-        SizedBox(width: 10),
-        // Container(
-        //   decoration: BoxDecoration(
-        //       color: Colors.black45, borderRadius: BorderRadius.circular(50)),
-        //   child: IconButton(
-        //     icon: Image.asset(
-        //       'assets/fav.png',
-        //       color: alreadySaved == false ? Colors.white : Colors.red,
-        //     ),
-        //     iconSize: 46,
-        //     onPressed: () {
-        //       if (alreadySaved == false) {
-        //         FirebaseAnalytics().logEvent(
-        //             name: 'wallpaper_add_favourite',
-        //             parameters: {'category_name': category});
-        //         setState(() {
-        //           alreadySaved = true;
-        //         });
-        //       } else {
-        //         FirebaseAnalytics().logEvent(
-        //             name: 'wallpaper_remove_favourite',
-        //             parameters: {'category_name': category});
-        //         setState(() {
-        //           alreadySaved = false;
-        //         });
-        //       }
-        //       add();
-        //     },
-        //   ),
-        // ),
-        LikeButton(
-          size: 40,
-          circleColor:
-              CircleColor(start: Color(0xff00ddff), end: Color(0xff0099cc)),
-          bubblesColor: BubblesColor(
-            dotPrimaryColor: Color(0xff33b5e5),
-            dotSecondaryColor: Color(0xff0099cc),
-          ),
-          likeBuilder: (bool isLiked) {
-            return Icon(
-              Icons.home,
-              color: isLiked ? Colors.deepPurpleAccent : Colors.grey,
-              size: 40,
-            );
-          },
-          likeCount: 665,
-          countBuilder: (int count, bool isLiked, String text) {
-            var color = isLiked ? Colors.deepPurpleAccent : Colors.grey;
-            Widget result;
-            if (count == 0) {
-              result = Text(
-                "love",
-                style: TextStyle(color: color),
+            likeBuilder: (bool isLiked) {
+              return Icon(
+                Icons.favorite,
+                color: isLiked ? Colors.red : Colors.grey,
+                size: 40,
               );
-            } else
-              result = Text(
-                text,
-                style: TextStyle(color: color),
-              );
-            return result;
-          },
+            },
+            onTap: (isLiked) async {
+              if (!isLiked) {
+                FirebaseAnalytics().logEvent(
+                    name: 'wallpaper_add_favourite',
+                    parameters: {'category_name': category});
+                favList.add(sliderList[widget.page]['final']);
+                print(favList);
+              } else {
+                favList.remove(sliderList[widget.page]['final']);
+                print(favList);
+              }
+              return !isLiked;
+            },
+          ).p(5)),
         ),
       ],
     );
   }
 
   List<String> favList = [];
-  bool alreadySaved = false;
+  // bool alreadySaved = false;
   bool ad = false;
 
   int rand = 99;
   Timer timer;
   bool adshow = false;
 
-  add() {
-    if (alreadySaved == true) {
-      favList.add(sliderList[widget.page]['final']);
-      print(favList);
-    } else {
-      favList.remove(sliderList[widget.page]['final']);
-      print(favList);
-    }
-  }
+  // add() {
+  //   if (alreadySaved == true) {
+  //     favList.add(sliderList[widget.page]['final']);
+  //     print(favList);
+  //   } else {
+  //     favList.remove(sliderList[widget.page]['final']);
+  //     print(favList);
+  //   }
+  // }
 
   adremove() {
     ad = true;
@@ -454,13 +408,20 @@ class SlidersState extends State<Sliders> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        SizedBox(height: 15),
-                        SpinKitFadingCube(
+                        10.heightBox,
+                        SpinKitFadingCircle(
+                          size: 40,
                           color: Colors.white,
-                          size: 20,
                         ),
-                        20.heightBox,
-                        'Loading...'.text.white.makeCentered()
+                        10.heightBox,
+                        "Loading..."
+                            .text
+                            .bold
+                            .xl
+                            .italic
+                            .white
+                            .makeCentered()
+                            .shimmer()
                       ],
                     ),
                   ),
@@ -475,116 +436,6 @@ class SlidersState extends State<Sliders> {
             )
           : Text(""),
     );
-  }
-
-  showAsBottomSheet(context, {String url, String category}) async {
-    await showSlidingBottomSheet(context, builder: (context) {
-      return SlidingSheetDialog(
-        color: Colors.black,
-        backdropColor: Colors.black.withOpacity(0.4),
-        elevation: 8,
-        cornerRadius: 16,
-        snapSpec: const SnapSpec(
-          snappings: [0.9, 0.7, 1.0],
-          positioning: SnapPositioning.relativeToAvailableSpace,
-        ),
-        builder: (context, state) {
-          return Container(
-            height: 150,
-            child: Material(
-                color: Colors.black.withOpacity(0.5),
-                child: Center(
-                  child: Wrap(
-                    spacing: 10.0, // gap between adjacent chips
-                    runSpacing: 10.0,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    alignment: WrapAlignment.center,
-
-                    children: [
-                      setWallpaperButton(
-                              url: url,
-                              category: category,
-                              text: 'Home Screen',
-                              icon: Icons.home,
-                              location: 'HomeScreen')
-                          .w(150),
-                      setWallpaperButton(
-                              url: url,
-                              category: category,
-                              text: 'Lock Screen',
-                              icon: Icons.phonelink_lock_sharp,
-                              location: 'LockScreen')
-                          .w(150),
-                      setWallpaperButton(
-                              url: url,
-                              category: category,
-                              text: 'Both Screen',
-                              icon: Icons.all_inbox_rounded,
-                              location: 'Both')
-                          .w(150)
-                    ],
-                  ),
-                )),
-          );
-        },
-      );
-    });
-  }
-
-  Widget setWallpaperButton(
-      {@required String url,
-      @required String category,
-      @required String text,
-      @required IconData icon,
-      @required String location}) {
-    return VxBox(
-            child: Row(
-      children: [
-        Icon(
-          icon,
-          color: Colors.white,
-        ),
-        text.text.white.make()
-      ],
-    ))
-        .padding(EdgeInsets.symmetric(horizontal: 10))
-        .border(color: Colors.grey, style: BorderStyle.solid)
-        .roundedLg
-        .height(40)
-        .make()
-        .onTap(() async {
-      Navigator.pop(context);
-      setState(() {
-        downloading = true;
-      });
-      String result;
-      var file = await DefaultCacheManager().getSingleFile(url);
-
-      try {
-        result = location == 'HomeScreen'
-            ? await WallpaperManager.setWallpaperFromFile(
-                file.path, WallpaperManager.HOME_SCREEN)
-            : location == 'LockScreen'
-                ? await WallpaperManager.setWallpaperFromFile(
-                    file.path, WallpaperManager.LOCK_SCREEN)
-                : await WallpaperManager.setWallpaperFromFile(
-                    file.path, WallpaperManager.BOTH_SCREENS);
-      } on PlatformException {
-        result = 'Failed to get wallpaper.';
-      }
-
-      VxToast.show(context, msg: result);
-      FirebaseAnalytics().logEvent(
-          name: 'wallpaper_set', parameters: {'category_name': category});
-      setState(() {
-        timer = new Timer(const Duration(milliseconds: 3000), () {
-          setState(() {
-            adshow = true;
-            downloading = false;
-          });
-        });
-      });
-    });
   }
 }
 

@@ -1,4 +1,3 @@
-
 import 'package:http/http.dart';
 import 'package:html/parser.dart';
 import 'package:html/dom.dart' as dom;
@@ -6,10 +5,10 @@ import 'package:wallpaper_app/Screens/HomeTab/home.dart';
 import 'package:wallpaper_app/Screens/SliderScreen/slider.dart';
 import 'package:wallpaper_app/Screens/SubCategoriesScreen/Sub_catagories.dart';
 
-
 sdscrap(String url) async {
+  Uri uri = Uri.parse(url);
   var client = Client();
-  Response response = await client.get(url);
+  Response response = await client.get(uri);
   if (response.statusCode == 200) {
     var document = parse(response.body);
     List<dom.Element> links = document
@@ -30,7 +29,9 @@ sdscrap(String url) async {
 
 cscrap(String url) async {
   var client = Client();
-  Response response = await client.get(url);
+  Uri uri = Uri.parse(url);
+
+  Response response = await client.get(uri);
   if (response.statusCode == 200) {
     var document = parse(response.body);
     List<dom.Element> links = document
@@ -51,7 +52,8 @@ cscrap(String url) async {
 
 sliderscrap(String url) async {
   var client = Client();
-  Response response = await client.get(url);
+  Uri uri = Uri.parse(url);
+  Response response = await client.get(uri);
   if (response.statusCode == 200) {
     var document = parse(response.body);
     List<dom.Element> links = document

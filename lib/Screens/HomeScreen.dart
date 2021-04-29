@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage>
       drawer: DrawerList(),
       appBar: AppBar(
         title: !isSearching
-            ? Text('EZ Wallpaper')
+            ? Text('Wallpapers Daily 2021')
             : TextField(
                 autofocus: true,
                 onSubmitted: (value) {
