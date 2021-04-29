@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gallery_saver/gallery_saver.dart';
+import 'package:like_button/like_button.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:wallpaper_app/Screens/PreviewScreen/Preview.dart';
@@ -60,20 +61,19 @@ class SlidersState extends State<Sliders> {
                 color: Colors.black.withOpacity(0),
                 child: Column(
                   children: <Widget>[
-                    FlatButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Row(
-                          children: <Widget>[
-                            Icon(Icons.arrow_back_ios,
-                                size: 30, color: Colors.white),
-                            Text(
-                              'Back',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        )),
+                    10.heightBox,
+                    Row(
+                      children: <Widget>[
+                        Icon(Icons.arrow_back_ios,
+                            size: 30, color: Colors.white),
+                        Text(
+                          'Back',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ).px(20).onTap(() {
+                      Navigator.pop(context);
+                    }),
                     SizedBox(height: 10),
                     Stack(
                       children: <Widget>[
@@ -85,10 +85,6 @@ class SlidersState extends State<Sliders> {
                               onPageChanged: (value, e) {
                                 setState(() {
                                   widget.page = value;
-                                  // favList.any((element) =>
-                                  //         element == sliderList[value])
-                                  //     ? alreadySaved = true
-                                  //     :
                                   alreadySaved = false;
                                   value % 10 == rand ? ad = true : ad = false;
                                   adshow = false;
@@ -272,7 +268,6 @@ class SlidersState extends State<Sliders> {
             },
             icon: Image.asset(
               'assets/download.png',
-              color: Colors.white,
             ),
             iconSize: 46,
           ),
@@ -294,34 +289,66 @@ class SlidersState extends State<Sliders> {
           ),
         ),
         SizedBox(width: 10),
-        Container(
-          decoration: BoxDecoration(
-              color: Colors.black45, borderRadius: BorderRadius.circular(50)),
-          child: IconButton(
-            icon: Image.asset(
-              'assets/fav.png',
-              color: alreadySaved == false ? Colors.white : Colors.red,
-            ),
-            iconSize: 46,
-            onPressed: () {
-              if (alreadySaved == false) {
-                FirebaseAnalytics().logEvent(
-                    name: 'wallpaper_add_favourite',
-                    parameters: {'category_name': category});
-                setState(() {
-                  alreadySaved = true;
-                });
-              } else {
-                FirebaseAnalytics().logEvent(
-                    name: 'wallpaper_remove_favourite',
-                    parameters: {'category_name': category});
-                setState(() {
-                  alreadySaved = false;
-                });
-              }
-              add();
-            },
+        // Container(
+        //   decoration: BoxDecoration(
+        //       color: Colors.black45, borderRadius: BorderRadius.circular(50)),
+        //   child: IconButton(
+        //     icon: Image.asset(
+        //       'assets/fav.png',
+        //       color: alreadySaved == false ? Colors.white : Colors.red,
+        //     ),
+        //     iconSize: 46,
+        //     onPressed: () {
+        //       if (alreadySaved == false) {
+        //         FirebaseAnalytics().logEvent(
+        //             name: 'wallpaper_add_favourite',
+        //             parameters: {'category_name': category});
+        //         setState(() {
+        //           alreadySaved = true;
+        //         });
+        //       } else {
+        //         FirebaseAnalytics().logEvent(
+        //             name: 'wallpaper_remove_favourite',
+        //             parameters: {'category_name': category});
+        //         setState(() {
+        //           alreadySaved = false;
+        //         });
+        //       }
+        //       add();
+        //     },
+        //   ),
+        // ),
+        LikeButton(
+          size: 40,
+          circleColor:
+              CircleColor(start: Color(0xff00ddff), end: Color(0xff0099cc)),
+          bubblesColor: BubblesColor(
+            dotPrimaryColor: Color(0xff33b5e5),
+            dotSecondaryColor: Color(0xff0099cc),
           ),
+          likeBuilder: (bool isLiked) {
+            return Icon(
+              Icons.home,
+              color: isLiked ? Colors.deepPurpleAccent : Colors.grey,
+              size: 40,
+            );
+          },
+          likeCount: 665,
+          countBuilder: (int count, bool isLiked, String text) {
+            var color = isLiked ? Colors.deepPurpleAccent : Colors.grey;
+            Widget result;
+            if (count == 0) {
+              result = Text(
+                "love",
+                style: TextStyle(color: color),
+              );
+            } else
+              result = Text(
+                text,
+                style: TextStyle(color: color),
+              );
+            return result;
+          },
         ),
       ],
     );
